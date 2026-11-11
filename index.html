@@ -575,6 +575,80 @@ body.dashmode .card h2,body.dashmode .db-settings summary span:first-child{color
 .mv-list{display:grid;gap:.25rem;margin:.5rem 0;max-height:30vh;overflow:auto}
 .mv-row{display:flex;align-items:center;gap:.5rem;font-size:.9rem}
 .mv-row small{color:var(--muted)}
+/* ===== Long Service Award ===== */
+.lsa-ed .row span{min-width:4rem}
+.lsa-hits{display:grid;gap:.3rem;margin:.3rem 0 .8rem;max-width:40rem}
+.lsa-hit{display:grid;grid-template-columns:1fr auto;grid-template-areas:"n a" "s a";text-align:left;gap:0 .8rem;padding:.45rem .7rem;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font:inherit;cursor:pointer}
+.lsa-hit b{grid-area:n}.lsa-hit small{grid-area:s;color:var(--muted)}.lsa-hit span{grid-area:a;align-self:center;color:#FFE08A;font-weight:800}
+.lsa-hit:disabled{opacity:.5;cursor:default}
+.lsa-thumb{width:3rem;height:3rem;border-radius:50%;overflow:hidden;border:2px solid var(--line);background:rgba(255,255,255,.06);display:grid;place-items:center;cursor:pointer;padding:0;font-size:1.2rem}
+.lsa-thumb img{width:100%;height:100%;object-fit:cover}
+.lsa-tbl td{vertical-align:middle}
+.lsa-dlg{width:min(70rem,96vw)}
+.lsa .lsa-stage{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:1.2vh;position:relative;z-index:1}
+.lsa-medal{font-size:clamp(4rem,14vh,9rem);line-height:1;filter:drop-shadow(0 0 30px rgba(242,207,115,.7));animation:float 2.6s ease-in-out infinite alternate}
+.lsa-title{margin:0;font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.08em;line-height:1.02;font-size:clamp(2.6rem,9vh,6.4rem)}
+.lsa-title span,.lsa-name span,.lsa-all-t span{background:linear-gradient(90deg,#FFF3C4,#F2CF73 30%,#FFE08A 50%,#C98F2E 70%,#FFF3C4);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 1.5px #000) drop-shadow(0 0 18px rgba(242,207,115,.55));animation:shimmer 6s linear infinite}
+.lsa-sub{margin:0;color:#F3ECFF;font-weight:700;font-size:clamp(1rem,2.8vh,1.8rem)}
+.lsa-hint{margin:2vh 0 0;color:#FFE08A;font-weight:700;letter-spacing:.2em;text-transform:uppercase;font-size:clamp(.8rem,1.8vh,1.1rem);animation:labelBlink 1.6s ease-in-out infinite}
+.lsa-count{margin:0;color:#FFE08A;font-weight:800;letter-spacing:.22em;text-transform:uppercase;font-size:clamp(.85rem,2vh,1.3rem)}
+.lsa-ring{width:clamp(5rem,12vh,7.5rem);aspect-ratio:1;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:radial-gradient(circle at 35% 30%,#FFE08A,#9b6a1d 75%);border:3px solid #F2CF73;box-shadow:0 0 30px rgba(242,207,115,.45);color:#2b1250;font-weight:800;font-size:1.6rem}
+.lsa-ring img{width:100%;height:100%;object-fit:cover}
+.lsa-ring.big{width:clamp(11rem,36vh,21rem);border-width:6px;font-size:clamp(3rem,9vh,5rem);box-shadow:0 0 0 8px rgba(255,243,196,.18),0 0 90px rgba(242,207,115,.6);animation:photoIn 1s cubic-bezier(.2,1.4,.4,1) both}
+.lsa-name{margin:.6vh 0 0;font-family:var(--display);font-weight:800;line-height:1.05;font-size:clamp(2rem,7vh,4.8rem);animation:fadeUp .7s .25s both}
+.lsa-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem;animation:fadeUp .7s .4s both}
+.lsa-chip{padding:.35rem 1rem;border-radius:999px;font-weight:800;font-size:clamp(.9rem,2.2vh,1.4rem);background:linear-gradient(90deg,#FFE08A,#F2CF73);color:#2b1250}
+.lsa-chip.lsa-cd{background:rgba(127,231,255,.14);color:#7FE7FF;border:1px solid rgba(127,231,255,.4)}
+.lsa-chip.lsa-co{background:rgba(255,179,222,.12);color:#FFB3DE;border:1px solid rgba(255,179,222,.35)}
+.lsa-years{margin:.8vh 0 0;display:inline-flex;align-items:baseline;gap:.6rem;padding:.5rem 1.6rem;border-radius:18px;border:2px solid #F2CF73;background:rgba(242,207,115,.1);animation:fadeUp .7s .55s both}
+.lsa-years b{font-family:var(--display);font-size:clamp(2.4rem,7vh,4.6rem);line-height:1;color:#FFE08A;text-shadow:0 0 20px rgba(242,207,115,.6)}
+.lsa-years span{font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#FFF3C4;font-size:clamp(.95rem,2.4vh,1.5rem)}
+.lsa-note{margin:0;color:#E9E0FF;font-style:italic;font-size:clamp(.95rem,2.2vh,1.3rem)}
+.lsa-all-t{margin:0;font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.1em;font-size:clamp(2rem,6vh,4rem)}
+.lsa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:1.4vh 1.4vw;width:min(96vw,1500px);margin-top:1.2vh}
+.lsa-grid.many{grid-template-columns:repeat(7,1fr)}
+.lsa-cell{display:flex;flex-direction:column;align-items:center;gap:.3rem;text-align:center;animation:fadeUp .6s both}
+.lsa-cell b{font-size:clamp(.75rem,1.6vh,1rem);line-height:1.15}
+.lsa-cell small{color:#FFE08A;font-weight:700;font-size:clamp(.65rem,1.3vh,.85rem)}
+.lsa .ld-when{margin-bottom:0}
+.dt-box{border:1px solid rgba(94,240,216,.45);border-radius:16px;padding:.4rem 1rem 1rem;margin-bottom:1.2rem;background:rgba(94,240,216,.06)}
+.lsa-paste{margin:.4rem 0 1rem;border:1px solid var(--line);border-radius:12px;padding:.5rem .8rem}
+.lsa-paste summary{cursor:pointer;font-weight:700;color:#FFE08A}
+.lsa-paste textarea{margin:.5rem 0;background:rgba(255,255,255,.06);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:.5rem .7rem;font:inherit;box-sizing:border-box}
+/* ===== dashboard: clean and responsive ===== */
+body.dashmode #app{max-width:1180px;margin:0 auto}
+body.dashmode .card,body.dashmode details,.dt-box{scroll-margin-top:8rem}
+body.dashmode .card{border-radius:18px}
+body.dashmode .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+body.dashmode .ld-tabs{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+body.dashmode .ld-tabs::-webkit-scrollbar{display:none}
+body.dashmode .ld-tabs button{flex:none}
+@media (max-width:900px){
+  body.dashmode .brand{padding:2vh 4vw;border-radius:18px}
+  body.dashmode .brand .ttl{font-size:clamp(1.5rem,6.5vw,2.4rem)!important}
+  body.dashmode .brand .when{font-size:.85rem}
+  .db-menu2{grid-template-columns:1fr!important}
+  .db-top{grid-template-columns:1fr 1fr!important}
+  .db-orgcard{grid-column:1/-1}
+  body.dashmode .db-grid2,body.dashmode .db-two{grid-template-columns:1fr!important}
+  .seat-grid{grid-template-columns:repeat(auto-fill,minmax(13rem,1fr))}
+}
+@media (max-width:640px){
+  body.dashmode{padding-left:.6rem!important;padding-right:.6rem!important}
+  .db-quick{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:.45rem .5rem;top:.2rem}
+  .db-quick::-webkit-scrollbar{display:none}
+  .db-q{flex:none;font-size:.8rem;padding:.38rem .7rem}
+  .db-quick-h{display:none}
+  .db-top{grid-template-columns:1fr!important}
+  body.dashmode .card{padding:1rem .8rem}
+  body.dashmode .row{flex-wrap:wrap}
+  body.dashmode .row input,body.dashmode .row select{max-width:100%!important;min-width:0!important;flex:1 1 10rem}
+  .rs-tiles{grid-template-columns:1fr 1fr}
+  .seat-grid{grid-template-columns:1fr}
+  .db-link small{display:none}
+  .lsa-tbl input{min-width:5rem}
+}
 /* awards: lighter reveal */
 .awx-rays{position:fixed;left:50%;top:42%;width:220vmax;height:220vmax;margin:-110vmax 0 0 -110vmax;pointer-events:none;z-index:0;opacity:.55;will-change:transform;
   background:repeating-conic-gradient(rgba(255,230,150,.16) 0 5deg,transparent 5deg 22.5deg);animation:rays 26s linear infinite;-webkit-mask:radial-gradient(circle,#000 0,transparent 55%);mask:radial-gradient(circle,#000 0,transparent 55%)}
@@ -1503,6 +1577,7 @@ function viewForm(){
     (B.orgs || []).map(o => el("option", {value:o, text:o})));
   const phone = el("input", {type:"tel", id:"phone", inputmode:"tel", autocomplete:"tel", placeholder:"e.g. 012-345 6789"});
   const sid = el("input", {type:"text", id:"sid", autocomplete:"off", autocapitalize:"characters", placeholder:"e.g. UOC1234 or MG1234"});
+  upperAsYouType(sid);
   let dept;
   if (B.departments && B.departments.length){
     dept = el("select", {id:"dept", required:true},
@@ -1716,7 +1791,8 @@ function viewDashboard(){
         el("span", {class:"db-link-i", "aria-hidden":"true", text:"⭐"}), el("span", {class:"db-link-t"}, el("b", {text:"VIP Guests"}), el("small", {text:"Add VIPs and their tables"})))),
     group("Big Screens", "gold",
       go("🎰", "Lucky Draw", "draw", "Projector", "gold"),
-      go("👑", "King & Queen", "awards", "Projector", "violet")),
+      go("👑", "King & Queen", "awards", "Projector", "violet"),
+      go("🏅", "Long Service Award", "lsa", "Projector", "gold")),
     group("Best Dressed Voting", "magenta",
       go("🗳", "Voting Page", "vote", "Voting QR page", "magenta"),
       go("🔳", "Voting QR", "vote-poster", "Poster to print", "magenta")));
@@ -1869,12 +1945,18 @@ function viewDashboard(){
             const o = {}; allDepts.forEach(d => { if (inputs[d].value.trim()) o[d] = inputs[d].value; });
             bg(call("apiSaveRegSettings", pin, {deptTables:o}), x => { cache.reg = x; settingsTab(true); }); }});
           const clearD = el("button", {class:"btn mini", type:"button", text:"Clear all", onclick:() => { allDepts.forEach(d => inputs[d].value = ""); dirty = true; }});
-          setBox.append(H3("Tables by Department"),
+          const saveSeat = el("button", {class:"btn", type:"button", text:"💾 Save & re-seat everyone", onclick:() => { dirty = false;
+            const o = {}; allDepts.forEach(d => { if (inputs[d].value.trim()) o[d] = inputs[d].value; });
+            bg(call("apiSaveRegSettings", pin, {deptTables:o}).then(() => call("apiReassignTables", pin)), x => { cache.reg = x; settingsTab(true); load(); toast("Saved. Everyone is seated again by department."); }); }});
+          const deptBox = el("div", {class:"dt-box", id:"deptTables"});
+          setBox.insertBefore(deptBox, setBox.firstChild);
+          deptBox.append(H3("🏷 Department → Table Numbers"),
             note("Give each department its own tables (e.g. 5, 6). Leave empty to seat that department automatically. After saving, press “Re-seat everyone by department” so everyone gets the right table. You can also change one person’s table in the Seating Plan."),
             el("div", {class:"tablewrap"}, el("table", {class:"tbl"}, el("thead", null, el("tr", null, ["Department", "Registered", "Needs", "Tables"].map(h => el("th", {text:h})))), listBody)),
-            el("div", {class:"row"}, suggest, saveD, clearD));
+            el("div", {class:"row"}, suggest, saveD, saveSeat, clearD));
         }
       }
+      if (setTab === "lsa"){ setBox.innerHTML = ""; setBox.append(lsaEditor(pin)); return; }
       if (setTab === "vip"){
         const r = cache.reg;
         setBox.innerHTML = "";
@@ -1929,7 +2011,7 @@ function viewDashboard(){
       }
     }catch(e){ setBox.innerHTML = ""; setBox.append(el("p", {class:"msg", text:errText(e)})); }
   }
-  const setTabs = el("div", {class:"ld-tabs"}, [["reg", "Registration"], ["tables", "Tables"], ["vip", "VIP Guests"], ["draw", "Lucky Draw"], ["prizes", "Prizes"], ["vote", "Voting"]].map(([k, t]) =>
+  const setTabs = el("div", {class:"ld-tabs"}, [["reg", "Registration"], ["tables", "Tables"], ["vip", "VIP Guests"], ["draw", "Lucky Draw"], ["prizes", "Prizes"], ["vote", "Voting"], ["lsa", "Long Service"]].map(([k, t]) =>
     el("button", {type:"button", "aria-selected": setTab === k, text:t, "data-k":k, onclick:e => { setTab = k; setTabs.querySelectorAll("button").forEach(b => b.setAttribute("aria-selected", b === e.currentTarget)); settingsTab(!!cache); }})));
   const setCard = el("details", {class:"card db-settings"},
     el("summary", null, el("span", {text:"⚙ Event Settings"}), el("small", {class:"muted", text:"Change lucky draw and voting settings without touching the big screens"}), saving),
@@ -2151,10 +2233,12 @@ function viewDashboard(){
     el("span", {class:"db-quick-h", text:"⚙ Quick settings"}),
     qb("📝", "Registration", () => openSet("reg"), "teal"),
     qb("🍽", "Tables & Seats", () => openSet("tables"), "teal"),
+    qb("🏷", "Department → Table", () => { openSet("tables"); setTimeout(() => { const d = document.getElementById("deptTables"); if (d) d.scrollIntoView({behavior:"smooth", block:"start"}); }, 900); }, "teal"),
     qb("⭐", "VIP Guests", () => openSet("vip"), "gold"),
     qb("🎰", "Lucky Draw", () => openSet("draw"), "gold"),
     qb("🎁", "Prizes", () => openSet("prizes"), "orange"),
     qb("🗳", "Voting", () => openSet("vote"), "magenta"),
+    qb("🏅", "Long Service", () => openSet("lsa"), "gold"),
     qb("📋", "RSVP Check", () => { rsvpCard.open = true; paintRsvp(); rsvpCard.scrollIntoView({behavior:"smooth", block:"start"}); }, "teal"),
     qb("🪑", "Seating Plan", () => { seatCard.open = true; paintSeats(); seatCard.scrollIntoView({behavior:"smooth", block:"start"}); }, "violet"),
     qb("⬇", "Downloads", () => { dlCard.open = true; dlCard.scrollIntoView({behavior:"smooth", block:"start"}); }, "violet"));
@@ -2789,6 +2873,7 @@ function viewVote(){
     /* Staff vote with their staff ID; guests (no staff ID) vote with their phone number */
     let who = (gv && mem && mem.org === "Guest" && !mem.staffId) ? "guest" : "staff";
     const sid = el("input", {type:"text", id:"vsid", autocapitalize:"characters", autocomplete:"off", placeholder:"e.g. UOC1234 or MG1234", value:(mem && mem.staffId) || ""});
+    upperAsYouType(sid);
     const gph = el("input", {type:"tel", id:"vgph", inputmode:"tel", autocomplete:"tel", placeholder:"e.g. 012-345 6789", value:(mem && mem.org === "Guest" && mem.phone) || ""});
     const ph = el("input", {type:"tel", id:"vph", inputmode:"numeric", maxlength:"4", autocomplete:"off", placeholder:"e.g. 6789"});
     const msg = el("p", {class:"msg", role:"status"});
@@ -3065,6 +3150,197 @@ function burstFx(cat, big){
 }
 
 /* ---------- awards screen (staff PIN, for the big screen) ---------- */
+/* a picture from the phone or laptop, made small enough to keep in the Google Sheet */
+/* staff IDs: "uoc1234" becomes "UOC1234" while typing */
+function upperAsYouType(inp){
+  inp.style.textTransform = "uppercase";
+  inp.addEventListener("input", () => { const a = inp.selectionStart, b = inp.selectionEnd, v = inp.value.toUpperCase(); if (v !== inp.value){ inp.value = v; try{ inp.setSelectionRange(a, b); }catch(e){} } });
+}
+function shrinkPhotoFile(file){
+  return new Promise((ok, bad) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => { URL.revokeObjectURL(url);
+      let size = 420, q = .82, out = "";
+      for (let k = 0; k < 8; k++){
+        const s = Math.min(1, size / Math.min(img.width, img.height)), side = Math.round(Math.min(img.width, img.height) * s);
+        const c = document.createElement("canvas"); c.width = c.height = side; const g = c.getContext("2d");
+        g.drawImage(img, (img.width - side / s) / 2, Math.max(0, (img.height - side / s) / 2.8), side / s, side / s, 0, 0, side, side);
+        out = c.toDataURL("image/jpeg", q); if (out.length < 46000) return ok(out);
+        size = Math.round(size * .85); q = Math.max(.5, q - .06);
+      }
+      bad(new Error("That photo is too large. Please choose a smaller picture."));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); bad(new Error("That file isn’t a picture. Please choose a JPG or PNG photo.")); };
+    img.src = url;
+  });
+}
+/* Long Service Award: pick recipients from the registrations, add years and a photo */
+function lsaEditor(pin, onSaved){
+  const box = el("div", {class:"lsa-ed"});
+  let L = null, photos = {}, regs = [], dirtyL = false;
+  const keyOf = r => r.staffId || r.name;
+  const msg = el("p", {class:"msg", role:"status"});
+  async function load(){
+    box.innerHTML = ""; box.append(el("p", {class:"muted", text:"Loading…"}));
+    try{ [L, photos] = await Promise.all([call("apiLsaState", pin), call("apiLsaPhotos", pin)]); }
+    catch(e){ box.innerHTML = ""; box.append(el("p", {class:"msg", text: /Unknown|not a function|apiLsa/i.test(errText(e)) ? "The Long Service Award needs the new Code.gs (Deploy > Manage deployments > Edit > New version)." : errText(e)})); return; }
+    call("apiDashboard", pin).then(d => { regs = (d && d.rows) || []; }).catch(() => {});
+    paint();
+  }
+  async function save(quiet){
+    try{ L = await call("apiSaveLsa", pin, {title:L.title, music:L.music, recipients:L.recipients}); dirtyL = false; if (!quiet) toast("Long Service Award saved."); if (onSaved) onSaved(L); paint(); return true; }
+    catch(e){ toast(errText(e)); return false; }
+  }
+  function paint(){
+    box.innerHTML = "";
+    const title = el("input", {type:"text", value:L.title, "aria-label":"Award title", style:"max-width:24rem"}); title.addEventListener("input", () => { L.title = title.value; dirtyL = true; });
+    const music = el("input", {type:"text", value:L.music || "", placeholder:"longservice.mp3  or  https://www.youtube.com/watch?v=…", "aria-label":"Award music"}); music.addEventListener("input", () => { L.music = music.value; dirtyL = true; });
+    /* search the registrations */
+    const q = el("input", {type:"text", placeholder:"🔍 Find staff: name, staff ID or department", autocomplete:"off", style:"max-width:26rem"});
+    const hits = el("div", {class:"lsa-hits"});
+    q.addEventListener("input", () => { const t = q.value.trim().toLowerCase(); hits.innerHTML = ""; if (t.length < 2) return;
+      const have = new Set(L.recipients.map(keyOf));
+      regs.filter(r => (r.name + " " + (r.staffId || "") + " " + (r.dept || "")).toLowerCase().indexOf(t) >= 0).slice(0, 8).forEach(r => hits.append(
+        el("button", {type:"button", class:"lsa-hit", disabled: have.has(r.staffId || r.name) || null, onclick:() => { L.recipients.push({staffId:r.staffId || "", name:r.name, dept:r.dept || "", org:r.org || "", years:"", note:"", music:""}); dirtyL = true; q.value = ""; hits.innerHTML = ""; paint(); }},
+          el("b", {text:r.name}), el("small", {text:[r.staffId, r.dept, r.org].filter(Boolean).join(" · ")}), el("span", {text: have.has(r.staffId || r.name) ? "✓ added" : "+ Add"}))));
+      if (!hits.children.length) hits.append(el("p", {class:"muted small", text:"No registered staff match. Use “Add someone not registered”."})); });
+    const manual = el("button", {class:"btn mini", type:"button", text:"+ Add someone not registered", onclick:() => { L.recipients.push({staffId:"", name:"New recipient", dept:"", org:"", years:"", note:"", music:""}); dirtyL = true; paint(); }});
+    /* paste a list: one person per line — Staff ID or name, years (optional) */
+    const paste = el("textarea", {rows:"4", style:"width:100%", placeholder:"Paste the list here, one person per line:\nUOC1234, 25\nSiti Aminah binti Ali, 20\n(Staff ID or full name, then years of service)"});
+    const addList = el("button", {class:"btn", type:"button", text:"+ Add the list", onclick:() => {
+      const norm = v => String(v || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(), have = new Set(L.recipients.map(keyOf));
+      let found = 0, manualN = 0;
+      paste.value.split(/\n+/).map(x => x.trim()).filter(Boolean).forEach(line => {
+        const c = line.split(/\t|,|;/).map(x => x.trim()), who = c[0], yrs = (c.slice(1).find(x => /\d/.test(x)) || "").replace(/[^0-9]/g, "");
+        if (!who || /^(staff|name|nama)/i.test(who)) return;
+        const id = who.toUpperCase().replace(/[^A-Z0-9]/g, "");
+        const r = regs.find(x => String(x.staffId || "").toUpperCase().replace(/[^A-Z0-9]/g, "") === id) || regs.find(x => norm(x.name) === norm(who));
+        if (r){ if (have.has(r.staffId || r.name)) return; L.recipients.push({staffId:r.staffId || "", name:r.name, dept:r.dept || "", org:r.org || "", years:yrs, note:"", music:""}); have.add(r.staffId || r.name); found++; }
+        else { L.recipients.push({staffId:/[a-z]/i.test(who) && /\d/.test(who) && !/\s/.test(who) ? id : "", name:/[a-z]/i.test(who) && /\d/.test(who) && !/\s/.test(who) ? who : who, dept:"", org:"", years:yrs, note:"", music:""}); manualN++; }
+      });
+      paste.value = ""; dirtyL = true; paint();
+      toast(found + " found in the registrations" + (manualN ? ", " + manualN + " not registered (check their details)" : "") + ". Press “Save Long Service Award”."); }});
+    const testBtn = el("button", {class:"btn mini", type:"button", text:"▶ Test 10 s", onclick:() => { const f = (music.value || "").trim() || "longservice.mp3"; MUSIC.play(f, "Test", 70, false).then(ok => { if (!ok) toast("Couldn’t play " + f + ". Is the file on GitHub?"); }); setTimeout(() => MUSIC.stop(800), 10000); }});
+    /* the list */
+    const tb = el("tbody");
+    L.recipients.forEach((r, i) => {
+      const inp = (k, ph, w) => { const x = el("input", {type:"text", value:r[k] || "", placeholder:ph, style:w ? "width:" + w : null}); x.addEventListener("input", () => { r[k] = x.value; dirtyL = true; }); return x; };
+      const pick = el("input", {type:"file", accept:"image/*", hidden:true});
+      pick.addEventListener("change", async () => { const f = pick.files && pick.files[0]; if (!f) return;
+        if (dirtyL && !(await save(true))) return;
+        try{ toast("Uploading the photo…"); const data = await shrinkPhotoFile(f); photos = await call("apiSaveLsaPhoto", pin, keyOf(r), data); toast("Photo saved for " + r.name + "."); paint(); }catch(e){ toast(errText(e)); } });
+      const pic = photos[keyOf(r)];
+      tb.append(el("tr", null,
+        el("td", {text:String(i + 1)}),
+        el("td", null, el("button", {type:"button", class:"lsa-thumb", title:"Add / change photo", onclick:() => pick.click()}, pic ? el("img", {src:pic, alt:""}) : el("span", {text:"📷"})), pick),
+        el("td", null, r.staffId ? el("b", {text:r.name}) : inp("name", "Name"), el("div", {class:"muted small", text:[r.staffId, r.dept, r.org].filter(Boolean).join(" · ") || "Not registered"})),
+        el("td", null, inp("years", "e.g. 25", "5rem")),
+        el("td", null, inp("note", "Optional note", "10rem")),
+        el("td", null, inp("music", "own song (optional)", "10rem")),
+        el("td", {class:"nowrap"},
+          el("button", {class:"btn mini", type:"button", text:"↑", disabled:i === 0 || null, onclick:() => { [L.recipients[i - 1], L.recipients[i]] = [L.recipients[i], L.recipients[i - 1]]; dirtyL = true; paint(); }}),
+          el("button", {class:"btn mini", type:"button", text:"↓", disabled:i === L.recipients.length - 1 || null, onclick:() => { [L.recipients[i + 1], L.recipients[i]] = [L.recipients[i], L.recipients[i + 1]]; dirtyL = true; paint(); }}),
+          el("button", {class:"btn mini", type:"button", text:"✕", onclick:() => { if (!confirm("Remove " + r.name + "?")) return; L.recipients.splice(i, 1); dirtyL = true; paint(); }}))));
+    });
+    if (!L.recipients.length) tb.append(el("tr", null, el("td", {colspan:"7", class:"muted small", text:"No recipients yet. Find staff above or paste a list."})));
+    box.append(
+      el("div", {class:"row"}, el("span", {text:"Title"}), title),
+      el("div", {class:"row"}, el("span", {text:"Music"}), music, testBtn),
+      el("p", {class:"muted small", text:"Award music plays while the recipients come up: an MP3 file next to index.html on GitHub (e.g. longservice.mp3) or a YouTube link. Empty = longservice.mp3. A recipient can also have their own song (column Music): it plays while they are on screen."}),
+      el("h3", {text:"Recipients · " + L.recipients.length + (L.recipients.length !== 21 ? " (planned: 21)" : " ✓")}),
+      el("div", {class:"row"}, q, manual), hits,
+      el("details", {class:"lsa-paste"}, el("summary", {text:"📋 Paste a list of names / staff IDs"}), paste, el("div", {class:"row"}, addList)),
+      el("div", {class:"tablewrap"}, el("table", {class:"tbl lsa-tbl"}, el("thead", null, el("tr", null, ["#", "Photo", "Recipient", "Years", "Note", "Music (MP3)", ""].map(h => el("th", {text:h})))), tb)),
+      el("p", {class:"muted small", text:"Details come from the registration. Click 📷 to add a photo (it is saved straight away). Use ↑ ↓ for the order on stage."}),
+      el("div", {class:"row"}, el("button", {class:"btn primary", type:"button", text:"Save Long Service Award", onclick:() => save(false)})), msg);
+  }
+  load();
+  return box;
+}
+/* Long Service Award on the big screen: title → each recipient → all recipients */
+function viewLsa(pin){
+  document.body.classList.add("drawmode"); clear(); liteOnBigScreen();
+  let L = null, photos = {}, idx = -1, started = false, stop = false, soft = false;
+  const autoSong = {f:""}; mp3Default("longservice.mp3").then(v => autoSong.f = v);
+  const head = el("header", {class:"ld-head"},
+    el("img", {class:"ld-logos", src:LOGOS, alt:"Cyberjaya Education Group Berhad, University of Cyberjaya, Cyberjaya College Central, SMR HR Group"}),
+    el("p", {class:"ld-when"}, "Annual Dinner 2027", el("span", {class:"sep", text:"•"}), "Global Harmony Gala"));
+  const stage = el("section", {class:"lsa-stage"});
+  const nextBtn = el("button", {class:"ld-btn gold aw-next", type:"button", onclick:() => go(1)});
+  const dlg = el("dialog", {class:"ld-dlg lsa-dlg"});
+  const dockBtn = el("button", {class:"ld-dock-btn", type:"button", "aria-label":"Show controls", text:"+"});
+  const dock = el("div", {class:"ld-dock"}, el("div", {class:"ld-dock-panel"},
+    el("button", {class:"ld-tool", type:"button", text:"⚙ Award settings & photos", onclick:() => { dock.classList.remove("open"); openSettings(); }}),
+    el("button", {class:"ld-tool", type:"button", text:"▦ Show all recipients", onclick:() => { dock.classList.remove("open"); idx = L ? L.recipients.length : 0; paint(); }}),
+    el("a", {class:"ld-tool", href:pageUrl("dashboard"), target:"_blank", rel:"noopener", text:"📊 Dashboard", onclick:() => dock.classList.remove("open")}),
+    el("p", {class:"ld-keys", text:"Keys: Space / → next · ← back · A all recipients · S / L music · F full screen"})), dockBtn);
+  dockBtn.addEventListener("click", e => { e.stopPropagation(); Sound.unlock(); dock.classList.toggle("open"); });
+  document.addEventListener("click", e => { if (!dock.contains(e.target)) dock.classList.remove("open"); });
+  const duck = f => { Sound.duck(f); MUSIC.duck(f); };
+  const keys = stageKeys({fixed:true, stop:() => { stop = !stop; if (stop) soft = false; duck(stop ? 0 : 1); keys.paint(stop, soft); if (!stop && !started) music(); },
+    slow:() => { if (stop) return; soft = !soft; duck(soft ? .22 : 1); keys.paint(stop, soft); }});
+  app.append(el("div", {class:"ld aw lsa"}, head, stage), nextBtn, dock, dlg, keys.el);
+  let playingSong = "";
+  function song(f){ if (!f || f === playingSong || stop) return; playingSong = f; MUSIC.play(f, "Long Service Award", 70, true); }
+  function music(){
+    if (!L) return; if (!started){ started = true; Sound.unlock(); Sound.mode("draw", 1); }
+    const r = idx >= 0 && idx < L.recipients.length ? L.recipients[idx] : null;
+    song((r && r.music) || L.music || autoSong.f);   /* own song for this recipient, else the award music */
+  }
+  const photoOf = r => photos[r.staffId || r.name];
+  const ring = (r, big) => el("div", {class:"lsa-ring" + (big ? " big" : "")}, photoOf(r) ? el("img", {src:photoOf(r), alt:""}) : el("span", {text:initials(r.name)}));
+  function paint(){
+    if (!L) return;
+    const n = L.recipients.length;
+    stage.innerHTML = ""; stage.className = "lsa-stage";
+    if (idx < 0){
+      stage.classList.add("title");
+      stage.append(el("div", {class:"lsa-medal", "aria-hidden":"true", text:"🏅"}),
+        el("h1", {class:"lsa-title"}, el("span", {text:L.title})),
+        el("p", {class:"lsa-sub", text:"Honouring " + n + " colleague" + (n === 1 ? "" : "s") + " for their years of dedication"}),
+        el("p", {class:"lsa-hint", text:"Press Space to begin"}));
+    } else if (idx < n){
+      const r = L.recipients[idx];
+      stage.classList.add("one");
+      stage.append(...[el("p", {class:"lsa-count", text:L.title + " · " + (idx + 1) + " of " + n}), ring(r, true),
+        el("h2", {class:"lsa-name"}, el("span", {text:r.name})),
+        el("div", {class:"lsa-chips"}, r.staffId ? el("span", {class:"lsa-chip", text:"🪪 " + r.staffId}) : null, r.dept ? el("span", {class:"lsa-chip lsa-cd", text:r.dept}) : null, r.org ? el("span", {class:"lsa-chip lsa-co", text:r.org}) : null),
+        r.years ? el("p", {class:"lsa-years"}, el("b", {text:String(r.years).replace(/\s*(years?|tahun)\s*$/i, "")}), el("span", {text:" Years of Service"})) : null,
+        r.note ? el("p", {class:"lsa-note", text:r.note}) : null].filter(Boolean));
+      if (!isLite()) confetti();
+    } else {
+      stage.classList.add("all");
+      const grid = el("div", {class:"lsa-grid" + (n > 15 ? " many" : "")});
+      L.recipients.forEach((r, i) => grid.append(el("div", {class:"lsa-cell", style:"animation-delay:" + (i * .05) + "s"}, ring(r), el("b", {text:r.name}), el("small", {text:[r.years ? r.years + " years" : "", r.dept].filter(Boolean).join(" · ")}))));
+      stage.append(el("h2", {class:"lsa-all-t"}, el("span", {text:"Congratulations"})), el("p", {class:"lsa-sub", text:"to all " + n + " " + L.title + " recipients"}), grid);
+    }
+    nextBtn.hidden = idx >= n; nextBtn.textContent = idx < 0 ? "Start ›" : idx < n - 1 ? "Next ›" : "All ›";
+  }
+  function go(d){ if (!L) return; const n = L.recipients.length; idx = Math.max(-1, Math.min(n, idx + d)); paint(); music(); }
+  function openSettings(){
+    dlg.innerHTML = "";
+    dlg.append(el("div", {class:"db-head"}, el("h2", {text:"🏅 Long Service Award"}), el("button", {class:"btn", type:"button", text:"Close", onclick:() => dlg.close()})),
+      el("p", {class:"muted small", text:"Keep this window away from the projector while you edit."}),
+      lsaEditor(pin, x => { L = x; refreshPhotos(); paint(); }));
+    dlg.showModal();
+  }
+  async function refreshPhotos(){ try{ photos = await call("apiLsaPhotos", pin); paint(); }catch(e){} }
+  async function load(){
+    try{ L = await call("apiLsaState", pin); }catch(e){ stage.innerHTML = ""; stage.append(el("p", {class:"msg", text: /Unknown|not a function|apiLsa/i.test(errText(e)) ? "The Long Service Award needs the new Code.gs (Deploy > Manage deployments > Edit > New version)." : errText(e)})); return; }
+    paint(); refreshPhotos();
+  }
+  document.addEventListener("keydown", e => {
+    const tag = (e.target.tagName || "").toLowerCase(); if (["input","textarea","select"].includes(tag) || dlg.open) return;
+    if (tag === "button"){ if (!/^[ aAfFsSlLnN]$/.test(e.key) && !/Arrow/.test(e.key)) return; e.target.blur(); }
+    if (e.code === "Space" || e.key === "ArrowRight" || e.key === "n" || e.key === "N"){ e.preventDefault(); go(1); }
+    else if (e.key === "ArrowLeft"){ e.preventDefault(); go(-1); }
+    else if (e.key === "a" || e.key === "A"){ idx = L ? L.recipients.length : 0; paint(); music(); }
+    else if (e.key === "s" || e.key === "S"){ keys.el.querySelector(".skey").click(); }
+    else if (e.key === "l" || e.key === "L"){ keys.el.querySelectorAll(".skey")[1].click(); }
+    else if (e.key === "f" || e.key === "F") goFull();
+  });
+  load(); setInterval(() => { if (!dlg.open) call("apiLsaState", pin).then(x => { const changed = JSON.stringify(x) !== JSON.stringify(L); L = x; if (changed){ refreshPhotos(); paint(); } }).catch(() => {}); }, 30000);
+}
 function viewAwards(pin){
   document.body.classList.add("drawmode"); clear(); liteOnBigScreen();
   let A = null, guests = [];
@@ -4280,6 +4556,7 @@ else if (B.view === "draw") staffGate("Lucky draw", "Enter the staff PIN to run 
 else if (B.view === "vote") viewVote();
 else if (B.view === "vote-poster") viewVotePoster();
 else if (B.view === "awards") staffGate("Best Dressed awards", "Enter the staff PIN to open the King & Queen screen.", viewAwards);
+else if (B.view === "lsa") staffGate("Long Service Award", "Enter the staff PIN to open the Long Service Award screen.", viewLsa);
 else viewForm();
 };
 </script>
