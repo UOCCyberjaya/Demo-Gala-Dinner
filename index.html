@@ -662,6 +662,9 @@ body.dashmode .db-settings summary{padding:.2rem 0}
 body.dashmode .db-link{border-radius:14px}
 body.dashmode section,body.dashmode details.card{margin-bottom:1rem}
 .dt-box{border:1px solid rgba(94,240,216,.45);border-radius:16px;padding:.4rem 1rem 1rem;margin-bottom:1.2rem;background:rgba(94,240,216,.06)}
+.lsa-manual{display:grid;grid-template-columns:1fr 1fr;gap:.3rem;min-width:16rem}
+.lsa-manual input{min-width:0;width:100%}
+.lsa-mus{display:flex;gap:.3rem;align-items:center}
 .lsa-paste{margin:.4rem 0 1rem;border:1px solid var(--line);border-radius:12px;padding:.5rem .8rem}
 .lsa-paste summary{cursor:pointer;font-weight:700;color:#FFE08A}
 .lsa-paste textarea{margin:.5rem 0;background:rgba(255,255,255,.06);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:.5rem .7rem;font:inherit;box-sizing:border-box}
@@ -2909,7 +2912,7 @@ function viewVote(){
   function step1(){
     if (!cfg.open) return closedCard("Best Dressed voting", "Voting isn’t open right now. Please check back when the emcee announces it.");
     if (!cfg.allStaff && !cfg.nominees.length) return closedCard("Best Dressed voting", "The nominees haven’t been announced yet. Please check back soon.");
-    const done = votedLocal(); if (done.QUEEN && done.KING) return thanks(done.name);
+    /* no "already voted" from this phone's memory: the server decides after the staff ID (so a test vote before a reset doesn't block the real vote) */
     onStep1 = true;
     if (cfg.check === "OPEN"){
       clear(); app.append(el("div", {class:"card center"}, el("p", {class:"muted", text:"Loading…"})));
@@ -3281,7 +3284,7 @@ function lsaEditor(pin, onSaved){
     box.innerHTML = ""; box.append(el("p", {class:"muted", text:"Loading…"}));
     try{ [L, photos] = await Promise.all([call("apiLsaState", pin), call("apiLsaPhotos", pin)]); }
     catch(e){ box.innerHTML = ""; box.append(el("p", {class:"msg", text: /Unknown|not a function|apiLsa/i.test(errText(e)) ? "The Long Service Award needs the new Code.gs (Deploy > Manage deployments > Edit > New version)." : errText(e)})); return; }
-    call("apiDashboard", pin).then(d => { regs = (d && d.rows) || []; }).catch(() => {});
+    try{ const d = await call("apiDashboard", pin); regs = (d && d.rows) || []; }catch(e){}
     paint();
   }
   async function save(quiet){
@@ -3330,10 +3333,14 @@ function lsaEditor(pin, onSaved){
       tb.append(el("tr", null,
         el("td", {text:String(i + 1)}),
         el("td", null, el("button", {type:"button", class:"lsa-thumb", title:"Add / change photo", onclick:() => pick.click()}, pic ? el("img", {src:pic, alt:""}) : el("span", {text:"📷"})), pick),
-        el("td", null, r.staffId ? el("b", {text:r.name}) : inp("name", "Name"), el("div", {class:"muted small", text:[r.staffId, r.dept, r.org].filter(Boolean).join(" · ") || "Not registered"})),
+        el("td", null, regs.some(x => x.staffId && x.staffId === r.staffId)
+          ? [el("b", {text:r.name}), el("div", {class:"muted small", text:[r.staffId, r.dept, r.org].filter(Boolean).join(" · ") + " · from registration"})]
+          : el("div", {class:"lsa-manual"}, inp("name", "Full name"), inp("staffId", "Staff ID"), inp("dept", "Department"), inp("org", "Organisation"))),
         el("td", null, inp("years", "e.g. 25", "5rem")),
         el("td", null, inp("note", "Optional note", "10rem")),
-        el("td", null, inp("music", "own song (optional)", "10rem")),
+        el("td", null, el("div", {class:"lsa-mus"}, inp("music", "own song (optional)", "9rem"),
+          el("button", {class:"btn mini", type:"button", text:"▶", title:"Test 10 seconds", onclick:() => { const f = (r.music || "").trim(); if (!f){ toast("Type the MP3 file name first, e.g. ahmad.mp3"); return; }
+            MUSIC.play(f, "Test", 70, false).then(ok => { if (!ok) toast("Couldn’t play " + f + ". Is the file on GitHub?"); }); setTimeout(() => MUSIC.stop(800), 10000); }}))),
         el("td", {class:"nowrap"},
           el("button", {class:"btn mini", type:"button", text:"↑", disabled:i === 0 || null, onclick:() => { [L.recipients[i - 1], L.recipients[i]] = [L.recipients[i], L.recipients[i - 1]]; dirtyL = true; paint(); }}),
           el("button", {class:"btn mini", type:"button", text:"↓", disabled:i === L.recipients.length - 1 || null, onclick:() => { [L.recipients[i + 1], L.recipients[i]] = [L.recipients[i], L.recipients[i + 1]]; dirtyL = true; paint(); }}),
