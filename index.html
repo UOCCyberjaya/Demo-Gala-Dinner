@@ -662,6 +662,9 @@ body.dashmode .db-settings summary{padding:.2rem 0}
 body.dashmode .db-link{border-radius:14px}
 body.dashmode section,body.dashmode details.card{margin-bottom:1rem}
 .dt-box{border:1px solid rgba(94,240,216,.45);border-radius:16px;padding:.4rem 1rem 1rem;margin-bottom:1.2rem;background:rgba(94,240,216,.06)}
+.lsa-ph{text-align:center}
+.lsa-ph .lsa-thumb{margin:0 auto .25rem}
+.lsa-up{white-space:nowrap;font-size:.72rem!important;padding:.2rem .5rem!important;min-height:28px!important}
 .lsa-manual{display:grid;grid-template-columns:1fr 1fr;gap:.3rem;min-width:16rem}
 .lsa-manual input{min-width:0;width:100%}
 .lsa-mus{display:flex;gap:.3rem;align-items:center}
@@ -1485,7 +1488,9 @@ window.__startApp = function(){
 if (BOOT.demo){ const dm = document.createElement("div"); dm.className = "demo-badge"; dm.textContent = "DEMO"; dm.title = "Demo version with sample data"; document.body.append(dm); }
 const B = BOOT, app = document.getElementById("app"), KEY = "ghg-simple-reg-v1";
 /* link to another page: ?page=… on the real site, #… in the Claude preview */
-function pageUrl(p){ return window.__PREVIEW ? B.appUrl + "#" + (p || "form") : B.appUrl + (p ? "?page=" + p : ""); }
+/* links between pages carry this build number, so a browser never opens an old copy from its cache */
+const APP_BUILD = "47";
+function pageUrl(p){ return window.__PREVIEW ? B.appUrl + "#" + (p || "form") : B.appUrl + (p ? "?page=" + p + (/^(vote|poster|vote-poster|guest|guest-poster)$/.test(p) ? "" : "&v=" + APP_BUILD) : ""); }
 /* open another event page. In full screen (big screen / LED) it opens on top of this page so full screen is kept;
    "← Back" returns. Inside that view, links stay in the same view. Otherwise it opens in a new tab as before. */
 const IN_VIEWER = window.self !== window.top;
@@ -3282,13 +3287,16 @@ function lsaEditor(pin, onSaved){
   const msg = el("p", {class:"msg", role:"status"});
   async function load(){
     box.innerHTML = ""; box.append(el("p", {class:"muted", text:"Loading…"}));
-    try{ [L, photos] = await Promise.all([call("apiLsaState", pin), call("apiLsaPhotos", pin)]); }
+    const pPhotos = call("apiLsaPhotos", pin).catch(() => ({})), pRegs = call("apiDashboard", pin).catch(() => null);
+    try{ L = await call("apiLsaState", pin); }
     catch(e){ box.innerHTML = ""; box.append(el("p", {class:"msg", text: /Unknown|not a function|apiLsa/i.test(errText(e)) ? "The Long Service Award needs the new Code.gs (Deploy > Manage deployments > Edit > New version)." : errText(e)})); return; }
-    try{ const d = await call("apiDashboard", pin); regs = (d && d.rows) || []; }catch(e){}
+    const d = await pRegs; regs = (d && d.rows) || [];
     paint();
+    photos = await pPhotos; paint();
   }
   async function save(quiet){
-    try{ L = await call("apiSaveLsa", pin, {title:L.title, music:L.music, recipients:L.recipients}); dirtyL = false; if (!quiet) toast("Long Service Award saved."); if (onSaved) onSaved(L); paint(); return true; }
+    if (!quiet) toast("Saving…");
+    try{ L = await call("apiSaveLsa", pin, {title:L.title, music:L.music, recipients:L.recipients}); dirtyL = false; if (!quiet) toast("✓ Long Service Award saved."); if (onSaved) onSaved(L); paint(); return true; }
     catch(e){ toast(errText(e)); return false; }
   }
   function paint(){
@@ -3304,7 +3312,8 @@ function lsaEditor(pin, onSaved){
         el("button", {type:"button", class:"lsa-hit", disabled: have.has(r.staffId || r.name) || null, onclick:() => { L.recipients.push({staffId:r.staffId || "", name:r.name, dept:r.dept || "", org:r.org || "", years:"", note:"", music:""}); dirtyL = true; q.value = ""; hits.innerHTML = ""; paint(); }},
           el("b", {text:r.name}), el("small", {text:[r.staffId, r.dept, r.org].filter(Boolean).join(" · ")}), el("span", {text: have.has(r.staffId || r.name) ? "✓ added" : "+ Add"}))));
       if (!hits.children.length) hits.append(el("p", {class:"muted small", text:"No registered staff match. Use “Add someone not registered”."})); });
-    const manual = el("button", {class:"btn mini", type:"button", text:"+ Add someone not registered", onclick:() => { L.recipients.push({staffId:"", name:"New recipient", dept:"", org:"", years:"", note:"", music:""}); dirtyL = true; paint(); }});
+    const manual = el("button", {class:"btn", type:"button", text:"✏️ Add manually", onclick:() => { L.recipients.push({staffId:"", name:"", dept:"", org:"", years:"", note:"", music:""}); dirtyL = true; paint();
+      const rows = box.querySelectorAll(".lsa-tbl tbody tr"); const last = rows[rows.length - 1]; if (last){ last.scrollIntoView({block:"center"}); const i = last.querySelector("input"); if (i) i.focus(); } }});
     /* paste a list: one person per line — Staff ID or name, years (optional) */
     const paste = el("textarea", {rows:"4", style:"width:100%", placeholder:"Paste the list here, one person per line:\nUOC1234, 25\nSiti Aminah binti Ali, 20\n(Staff ID or full name, then years of service)"});
     const addList = el("button", {class:"btn", type:"button", text:"+ Add the list", onclick:() => {
@@ -3328,11 +3337,13 @@ function lsaEditor(pin, onSaved){
       const pick = el("input", {type:"file", accept:"image/*", hidden:true});
       pick.addEventListener("change", async () => { const f = pick.files && pick.files[0]; if (!f) return;
         if (dirtyL && !(await save(true))) return;
-        try{ toast("Uploading the photo…"); const data = await shrinkPhotoFile(f); photos = await call("apiSaveLsaPhoto", pin, keyOf(r), data); toast("Photo saved for " + r.name + "."); paint(); }catch(e){ toast(errText(e)); } });
+        try{ const data = await shrinkPhotoFile(f); const k = keyOf(r), before = photos[k]; photos[k] = data; paint(); toast("Saving the photo…");
+          try{ await call("apiSaveLsaPhoto", pin, k, data); toast("✓ Photo saved for " + r.name + "."); }catch(e){ photos[k] = before; paint(); toast(errText(e)); } }catch(e){ toast(errText(e)); } });
       const pic = photos[keyOf(r)];
       tb.append(el("tr", null,
         el("td", {text:String(i + 1)}),
-        el("td", null, el("button", {type:"button", class:"lsa-thumb", title:"Add / change photo", onclick:() => pick.click()}, pic ? el("img", {src:pic, alt:""}) : el("span", {text:"📷"})), pick),
+        el("td", {class:"lsa-ph"}, el("button", {type:"button", class:"lsa-thumb", title:"Upload photo", onclick:() => pick.click()}, pic ? el("img", {src:pic, alt:""}) : el("span", {text:"📷"})),
+          el("button", {type:"button", class:"btn mini lsa-up", text: pic ? "Change" : "Upload photo", onclick:() => pick.click()}), pick),
         el("td", null, regs.some(x => x.staffId && x.staffId === r.staffId)
           ? [el("b", {text:r.name}), el("div", {class:"muted small", text:[r.staffId, r.dept, r.org].filter(Boolean).join(" · ") + " · from registration"})]
           : el("div", {class:"lsa-manual"}, inp("name", "Full name"), inp("staffId", "Staff ID"), inp("dept", "Department"), inp("org", "Organisation"))),
@@ -3352,10 +3363,11 @@ function lsaEditor(pin, onSaved){
       el("div", {class:"row"}, el("span", {text:"Music"}), music, testBtn),
       el("p", {class:"muted small", text:"Award music plays while the recipients come up: an MP3 file next to index.html on GitHub (e.g. longservice.mp3) or a YouTube link. Empty = longservice.mp3. A recipient can also have their own song (column Music): it plays while they are on screen."}),
       el("h3", {text:"Recipients · " + L.recipients.length + (L.recipients.length !== 21 ? " (planned: 21)" : " ✓")}),
+      el("p", {class:"muted small", style:"margin:.2rem 0 .4rem", text:"Add recipients one of three ways: find a registered staff member, add manually, or paste a list."}),
       el("div", {class:"row"}, q, manual), hits,
       el("details", {class:"lsa-paste"}, el("summary", {text:"📋 Paste a list of names / staff IDs"}), paste, el("div", {class:"row"}, addList)),
       el("div", {class:"tablewrap"}, el("table", {class:"tbl lsa-tbl"}, el("thead", null, el("tr", null, ["#", "Photo", "Recipient", "Years", "Note", "Music (MP3)", ""].map(h => el("th", {text:h})))), tb)),
-      el("p", {class:"muted small", text:"Details come from the registration. Click 📷 to add a photo (it is saved straight away). Use ↑ ↓ for the order on stage."}),
+      el("p", {class:"muted small", text:"Registered staff: details come from the registration. Added manually: type the name, staff ID, department and organisation. “Upload photo” saves the picture straight away. Use ↑ ↓ for the order on stage, then press Save."}),
       el("div", {class:"row"}, el("button", {class:"btn primary", type:"button", text:"Save Long Service Award", onclick:() => save(false)})), msg);
   }
   load();
