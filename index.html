@@ -1479,7 +1479,23 @@ async function apiPost(fn, args){
   if (!data.ok) throw new Error(data.error || "Something went wrong. Please try again.");
   return data.result;
 }
-async function call(fn, ...args){ return apiPost(fn, args); }
+/* speed: answers to "read" requests are remembered (this tab), so pages open at once with the last data
+   and refresh in the background; the same request made twice at the same moment is sent only once */
+const READ_API = /^(apiAdminState|apiDashboard|apiLsaState|apiLsaPhotos|apiNominees|apiDrawState|apiAwardsState|apiAwardPhotos|apiRegSettings|apiVoteConfig)$/;
+const MEMO = {}, INFLIGHT = {};
+const memoKey = (fn, args) => fn + "|" + JSON.stringify(args || []);
+function peek(fn, ...args){
+  const k = memoKey(fn, args); if (MEMO[k]) return MEMO[k];
+  try{ const v = sessionStorage.getItem("ghg-memo:" + k); if (v){ MEMO[k] = JSON.parse(v); return MEMO[k]; } }catch(e){}
+  return null;
+}
+async function call(fn, ...args){
+  if (!READ_API.test(fn)) return apiPost(fn, args);
+  const k = memoKey(fn, args);
+  if (INFLIGHT[k]) return INFLIGHT[k];
+  INFLIGHT[k] = apiPost(fn, args).then(r => { MEMO[k] = r; try{ sessionStorage.setItem("ghg-memo:" + k, JSON.stringify(r)); }catch(e){} return r; }).finally(() => { delete INFLIGHT[k]; });
+  return INFLIGHT[k];
+}
 window.__apiPost = apiPost;
 </script>
 <script>
@@ -1873,6 +1889,9 @@ function viewDashboard(){
   const note = t => el("p", {class:"muted small", text:t});
   async function settingsTab(fromCache){
     const pin = pinNow();
+    /* Long Service has its own data: open it at once, and don't rebuild it when other settings refresh */
+    if (setTab === "lsa"){ if (!setBox.querySelector(".lsa-ed")){ setBox.innerHTML = ""; setBox.append(lsaEditor(pin)); } return; }
+    if (!cache){ const c = peek("apiAdminState", pin); if (c) cache = c; }
     if (!cache){ setBox.innerHTML = ""; setBox.append(el("p", {class:"muted small", text:"Loading…"})); await prefetch().catch(() => {}); }
     else if (!fromCache){ dirty = false; prefetch().then(() => { if (!dirty) settingsTab(true); }).catch(() => {}); }
     if (!cache) return;
@@ -2330,7 +2349,9 @@ function viewDashboard(){
   async function load(){
     loadVotes();
     try{
-      const d = await call("apiDashboard", PIN.get());
+      const first = lastTotal === null, cached = first ? peek("apiDashboard", PIN.get()) : null;
+      const d = cached || await call("apiDashboard", PIN.get());
+      if (cached) setTimeout(load, 50);   /* shown at once from the last copy; fresh data right after */
       rows = d.rows; vips = d.vips || []; vipTables = d.vipTables || []; seatsPer = d.seats || 0; tableCount = d.tables || 0; paintSeats(); paintRsvp();
       const total = rows.length;
       if (lastTotal !== null && total > lastTotal){ bump(totalNum); toast((total - lastTotal) + " new registration" + (total - lastTotal > 1 ? "s" : "")); }
@@ -2370,6 +2391,8 @@ function viewDashboard(){
     }catch(e){ live.classList.add("off"); if (/PIN/i.test(errText(e))){ PIN.del(); viewDashboard(); } }
   }
   load(); setInterval(() => { if (!document.documentElement.classList.contains("pv-open") && !document.hidden) load(); }, 10000);
+  /* warm up: settings and Long Service data load quietly in the background, so they open at once when clicked */
+  setTimeout(() => { prefetch().catch(() => {}); call("apiLsaState", PIN.get()).catch(() => {}); setTimeout(() => call("apiLsaPhotos", PIN.get()).catch(() => {}), 1500); }, 2500);
 }
 
 /* ---------- staff PIN gate (shared) ---------- */
@@ -3286,13 +3309,16 @@ function lsaEditor(pin, onSaved){
   const keyOf = r => r.staffId || r.name;
   const msg = el("p", {class:"msg", role:"status"});
   async function load(){
-    box.innerHTML = ""; box.append(el("p", {class:"muted", text:"Loading…"}));
+    const cL = peek("apiLsaState", pin), cR = peek("apiDashboard", pin), cP = peek("apiLsaPhotos", pin);
+    if (cL){ L = JSON.parse(JSON.stringify(cL)); regs = (cR && cR.rows) || []; photos = cP || {}; paint(); }   /* instant: last copy */
+    else { box.innerHTML = ""; box.append(el("p", {class:"muted", text:"Loading…"})); }
     const pPhotos = call("apiLsaPhotos", pin).catch(() => ({})), pRegs = call("apiDashboard", pin).catch(() => null);
-    try{ L = await call("apiLsaState", pin); }
-    catch(e){ box.innerHTML = ""; box.append(el("p", {class:"msg", text: /Unknown|not a function|apiLsa/i.test(errText(e)) ? "The Long Service Award needs the new Code.gs (Deploy > Manage deployments > Edit > New version)." : errText(e)})); return; }
+    try{ const fresh = await call("apiLsaState", pin); if (!dirtyL) L = JSON.parse(JSON.stringify(fresh)); }
+    catch(e){ if (cL) return; box.innerHTML = ""; box.append(el("p", {class:"msg", text: /Unknown|not a function|apiLsa/i.test(errText(e)) ? "The Long Service Award needs the new Code.gs (Deploy > Manage deployments > Edit > New version)." : errText(e)})); return; }
     const d = await pRegs; regs = (d && d.rows) || [];
-    paint();
-    photos = await pPhotos; paint();
+    if (!dirtyL && !box.contains(document.activeElement)) paint();   /* don't redraw under someone typing */
+    const ph = await pPhotos; photos = Object.assign({}, ph, photos);
+    if (!dirtyL && !box.contains(document.activeElement)) paint();
   }
   async function save(quiet){
     if (!quiet) toast("Saving…");
@@ -3442,7 +3468,9 @@ function viewLsa(pin){
   }
   async function refreshPhotos(){ try{ photos = await call("apiLsaPhotos", pin); paint(); }catch(e){} }
   async function load(){
-    try{ L = await call("apiLsaState", pin); }catch(e){ stage.innerHTML = ""; stage.append(el("p", {class:"msg", text: /Unknown|not a function|apiLsa/i.test(errText(e)) ? "The Long Service Award needs the new Code.gs (Deploy > Manage deployments > Edit > New version)." : errText(e)})); return; }
+    const cL = peek("apiLsaState", pin), cP = peek("apiLsaPhotos", pin);
+    if (cL){ L = cL; photos = cP || {}; paint(); }
+    try{ L = await call("apiLsaState", pin); }catch(e){ if (cL) return; stage.innerHTML = ""; stage.append(el("p", {class:"msg", text: /Unknown|not a function|apiLsa/i.test(errText(e)) ? "The Long Service Award needs the new Code.gs (Deploy > Manage deployments > Edit > New version)." : errText(e)})); return; }
     paint(); refreshPhotos();
   }
   document.addEventListener("keydown", e => {
@@ -3493,6 +3521,8 @@ function viewNominate(pin){
   app.append(card);
   const msg = el("p", {class:"msg", role:"status"});
   async function load(){
+    const cD = peek("apiDashboard", pin), cN = peek("apiNominees", pin);
+    if (cD && cN){ regs = cD.rows || []; list = cN; paint(); }
     try{ const [d, n] = await Promise.all([call("apiDashboard", pin), call("apiNominees", pin)]); regs = (d && d.rows) || []; list = n || []; paint(); }
     catch(e){ card.innerHTML = ""; card.append(el("p", {class:"msg", text: /Unknown|apiNominees/i.test(errText(e)) ? "This page needs the new Code.gs (Deploy > Manage deployments > Edit > New version)." : errText(e)})); }
   }
