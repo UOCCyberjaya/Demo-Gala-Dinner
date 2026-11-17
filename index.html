@@ -552,6 +552,18 @@ body:not(.drawmode) .mc.fixed{display:none}
 .ph-av img{width:100%;height:100%;object-fit:cover}
 .ph-row .ph-t{flex:1;min-width:0}
 .ph-row .ph-t small{display:block;color:var(--muted)}
+/* ===== smooth: no live blur (repainted on every frame behind animated backgrounds) ===== */
+.card,.ld-panel,.ld-top,.awc-chip,.awn-card,.db-quick,.ld-dock-panel,dialog{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.card{background:rgba(30,17,68,.93)}
+body.dashmode .bgart{will-change:auto}
+/* lucky draw spin: the number repaints 25 times a second, so it is kept simple and on its own layer */
+.ld-num{contain:layout style}
+.ld-num.spinning{background:none!important;-webkit-text-fill-color:#FFD36E!important;color:#FFD36E!important;text-shadow:0 0 28px rgba(242,207,115,.55)!important}
+html.lite .ld-num.spinning{text-shadow:none!important}
+.ld-panel{contain:layout}
+/* every click feels instant */
+button,a,.db-q,.db-link,.ld-tool,.seat-chip,.rs-tile,.vn-vote{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.db-link,.db-q,.btn{transition-duration:.12s!important}
 /* ===== dashboard: event-themed hero, quick settings, livelier cards ===== */
 body.dashmode .brand{max-width:1100px;padding:3.2vh 2vw 2.6vh;border-radius:26px;border:1px solid rgba(242,207,115,.45);
   background:linear-gradient(180deg,rgba(18,10,42,.35),rgba(18,10,42,.55)),var(--art) center 38%/cover no-repeat;box-shadow:0 20px 60px rgba(0,0,0,.45),0 0 60px rgba(242,207,115,.12)}
@@ -1780,7 +1792,7 @@ function viewDashboard(){
   }
   document.body.classList.add("wide", "dashmode"); clear();
   const hues = ["--jade","--saffron","--rose","--lapis","--gold"];
-  let rows = [], lastTotal = null;
+  let rows = [], lastTotal = null, lastSig = "";
   const totalNum = el("span", {class:"db-total-num", text:"0"});
   const live = el("p", {class:"db-live"}, el("span", {class:"db-dot", "aria-hidden":"true"}), el("span", {text:"Live"}));
   const lastAt = el("p", {class:"db-sub"});
@@ -2352,6 +2364,9 @@ function viewDashboard(){
       const first = lastTotal === null, cached = first ? peek("apiDashboard", PIN.get()) : null;
       const d = cached || await call("apiDashboard", PIN.get());
       if (cached) setTimeout(load, 50);   /* shown at once from the last copy; fresh data right after */
+      const sig = JSON.stringify(d);
+      if (sig === lastSig){ lastAt.textContent = "Updates every 10 seconds · last checked " + new Date().toLocaleTimeString([], {hour:"numeric", minute:"2-digit", second:"2-digit"}); live.classList.remove("off"); return; }
+      lastSig = sig;   /* nothing new → no redraw, so clicks never stutter */
       rows = d.rows; vips = d.vips || []; vipTables = d.vipTables || []; seatsPer = d.seats || 0; tableCount = d.tables || 0; paintSeats(); paintRsvp();
       const total = rows.length;
       if (lastTotal !== null && total > lastTotal){ bump(totalNum); toast((total - lastTotal) + " new registration" + (total - lastTotal > 1 ? "s" : "")); }
@@ -2392,7 +2407,9 @@ function viewDashboard(){
   }
   load(); setInterval(() => { if (!document.documentElement.classList.contains("pv-open") && !document.hidden) load(); }, 10000);
   /* warm up: settings and Long Service data load quietly in the background, so they open at once when clicked */
-  setTimeout(() => { prefetch().catch(() => {}); call("apiLsaState", PIN.get()).catch(() => {}); setTimeout(() => call("apiLsaPhotos", PIN.get()).catch(() => {}), 1500); }, 2500);
+  setTimeout(() => { const pn = PIN.get(); prefetch().catch(() => {}); call("apiLsaState", pn).catch(() => {});
+    setTimeout(() => { call("apiDrawState", pn).catch(() => {}); call("apiAwardsState", pn).catch(() => {}); }, 1200);
+    setTimeout(() => { call("apiLsaPhotos", pn).catch(() => {}); call("apiAwardPhotos", pn).catch(() => {}); }, 2600); }, 2500);
 }
 
 /* ---------- staff PIN gate (shared) ---------- */
@@ -4020,7 +4037,8 @@ function viewAwards(pin){
   });
   const kickMusic = () => { if (bgOn) return; Sound.unlock(); waitMusic(); };
   document.addEventListener("pointerdown", kickMusic, {once:true}); document.addEventListener("keydown", kickMusic, {once:true});
-  refresh(); loadPhotos(); setInterval(() => { if (!revealing && !showing && !dlg.open) refresh(); }, 10000); setInterval(() => { if (!revealing && !showing && !dlg.open) loadPhotos(); }, 30000);
+  { const c = peek("apiAwardsState", pin), cp = peek("apiAwardPhotos", pin); if (cp) photos = cp; if (c){ A = c; render(); } }   /* instant first screen */
+  refresh(); loadPhotos(); setInterval(() => { if (!revealing && !showing && !dlg.open && !document.hidden) refresh(); }, 10000); setInterval(() => { if (!revealing && !showing && !dlg.open) loadPhotos(); }, 30000);
   call("apiDashboard", pin).then(d => { guests = d.rows.map(r => ({name:r.name, staffId:r.staffId, dept:r.dept})); }).catch(() => {});
 }
 
@@ -4664,7 +4682,8 @@ function viewDraw(pin){
     const p = P[i]; if (!p || p.remaining <= 0) return;
     chosen = p.name; render();
   }
-  refresh(); setInterval(() => { if (!busy && !dlg.open) refresh(); }, 20000);
+  { const c = peek("apiDrawState", pin); if (c){ S = c; render(); } }   /* instant first screen */
+  refresh(); setInterval(() => { if (!busy && !dlg.open && !document.hidden) refresh(); }, 20000);
   curTrack = "none"; showStart();
 }
 
